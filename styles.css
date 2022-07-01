@@ -1,0 +1,64 @@
+.broadcaster section {
+    visibility: hidden;
+}
+
+.broadcaster .admintext {
+    vertical-align: super;
+    font-variant: all-small-caps;
+}
+
+.broadcaster,
+.broadcaster button {
+    margin-bottom: 5px;
+}
+
+.broadcaster.formdiv {
+    padding: 1em;
+}
+
+.broadcaster.formdiv label {
+    vertical-align: bottom;
+    font-size: larger;
+    margin: 8px;
+}
+
+.broadcaster.formdiv select {
+    vertical-align: super;
+    font-size: large;
+}
+
+.broadcaster.pagediv {
+    max-height: 46em;
+}
+
+.broadcaster.recordform {
+    overflow: hidden;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 0;
+}
+
+.broadcaster.pagetyperecords {
+    max-height: 30em;
+    overflow-y: auto;
+}
+
+.broadcaster.recordform {
+    overflow: hidden;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 0;
+}
+
+.broadcaster #id_categoryid,
+.broadcaster #id_cohortid,
+.broadcaster #id_identifier,
+.broadcaster #id_title,
+.broadcaster #id_content {
+    width: 100%;
+}
+
+.broadcaster #newbutton,
+.broadcaster #backbutton {
+    color: white;
+}

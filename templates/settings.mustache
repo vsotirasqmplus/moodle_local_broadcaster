@@ -1,0 +1,60 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_broadcaster/settings
+
+    Broadcaster content layout template.
+
+    Context variables required for this template:
+    * content - The core renderer for the page
+
+    Example context (json):
+    {
+
+    }
+}}
+<div>
+    <h1>{{#str}} pluginname, local_broadcaster {{/str}} {{#str}} settings, local_broadcaster {{/str}}</h1>
+    {{#sitepermission}}
+        <p>{{#str}} managewelcome, local_broadcaster {{/str}}</p>
+        <form method="post">
+            <button type="submit" formaction="{{wwwroot}}/settings.php?section=local_broadcaster" class="btn btn-primary">{{#str}} settings, local_broadcaster{{/str}}</button>
+        </form>
+        <br/>
+    <form method="post">
+        <button type="submit" formaction="{{wwwroot}}/tool/task/scheduledtasks.php?action=edit&task=local_broadcaster%5Ctask%5Cdelete_pages" class="btn btn-primary">{{#str}} edittask, local_broadcaster{{/str}}</button>
+    </form>
+    <br/>
+        <form method="post">
+            <button type="submit" formaction="{{wwwroot}}/tasklogs.php?filter=local_broadcaster%5Ctask%5Cdelete_pages" class="btn btn-primary">{{#str}}
+                logs, local_broadcaster {{/str}}</button>
+        </form>
+        <br/>
+        <form method="post">
+            <button type="submit" formaction="./edit_types.php" class="btn btn-primary">{{#str}} managetypeslink, local_broadcaster {{/str}}</button>
+        </form>
+        <p>&nbsp;</p>
+    {{/sitepermission}}
+    {{#categorypermission}}
+        <form method="post">
+            <button type="submit" formaction="./edit_pages.php" class="btn btn-primary">{{#str}} managepageslink, local_broadcaster {{/str}}</button>
+        </form>
+    {{/categorypermission}}
+    {{#nopermission}}
+        {{#str}} nopermissiontoedit, local_broadcaster {{/str}}
+    {{/nopermission}}
+</div>

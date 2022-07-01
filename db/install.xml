@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/broadcaster/db" VERSION="20220325" COMMENT="XMLDB file for Moodle local/broadcaster on Content Broadcaster"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_broadcaster" COMMENT="Table to keep track of Broadcasting contents">
+      <link type="text/css" id="dark-mode" rel="stylesheet" href=""/>
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID of the editor"/>
+        <FIELD NAME="pagetypeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Page Type ID of the target URL"/>
+        <FIELD NAME="timebegin" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Beginning time of broadcasting"/>
+        <FIELD NAME="timeend" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="End time of broadcasting"/>
+        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to show contents or not"/>
+        <FIELD NAME="header" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Header or Footer"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Category ID for broadcasting"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cohort ID for broadcasting"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="loggedin" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Is the page for logged in users?"/>
+        <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="What account role this is for"/>
+        <FIELD NAME="identifier" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false" COMMENT="Content record Identifier"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="60" NOTNULL="true" DEFAULT="Please set the Page Title" SEQUENCE="false" COMMENT="Page title to show"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Content of the broadcasting"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="local_broadcaster_ix" UNIQUE="false" FIELDS="pagetypeid, timebegin, timeend, active, categoryid, cohortid, loggedin, roleid, identifier" HINTS="compositeindex" COMMENT="Broadcasting search index"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_broadcaster_main_log" COMMENT="Keep track of changes to the Broadcaster contents">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User ID for the message log"/>
+        <FIELD NAME="broadcastid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Broadcast ID edited"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time stamp for this record"/>
+        <FIELD NAME="oldcontents" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Old contents"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="local_broadcaster_log_ix" UNIQUE="false" FIELDS="userid, broadcastid, timecreated" COMMENT="Index for the Broadcast changes index"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_broadcaster_pagetype" COMMENT="Content Broadcaster Page Type targets">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID edited this record"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false" COMMENT="Page Type name"/>
+        <FIELD NAME="urlpattern" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false" COMMENT="Page URL pattern"/>
+        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="URL Active flag"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="local_broadcaster_pagetype_ix" UNIQUE="false" FIELDS="id, userid, active, urlpattern" COMMENT="Page Types Index"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_broadcaster_types_log" COMMENT="Page types change log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Editor User ID"/>
+        <FIELD NAME="pagetypeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Broadcast Page Type ID edited"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time stamp for this record"/>
+        <FIELD NAME="oldurlpattern" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Old URL pattern contents"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
