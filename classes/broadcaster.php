@@ -177,7 +177,8 @@ class broadcaster {
     private static function get_pages_to_render(string $url, object $user, object $course): array {
         global $DB, $PAGE;
         $records = [];
-        self::update_cache();
+        // Cater for upgrading state empty cache.
+        self::update_cache() ?? [];
         $typerecords = self::$types;
         // Get type IDs.
         // Cater for the query when there is no match.
