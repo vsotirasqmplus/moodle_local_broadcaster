@@ -5,7 +5,6 @@
 >
   <TABLES>
     <TABLE NAME="local_broadcaster" COMMENT="Table to keep track of Broadcasting contents">
-      <link type="text/css" id="dark-mode" rel="stylesheet" href=""/>
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID of the editor"/>
