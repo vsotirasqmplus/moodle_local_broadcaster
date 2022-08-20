@@ -23,24 +23,28 @@ use dml_exception;
 
 require_once(dirname(__FILE__) . '/../../locallib.php');
 
-class broadcasterpagetype_created extends base {
+class broadcasterpagetype_created extends base
+{
 
     /**
      * @inheritDoc
      * @throws dml_exception
      */
-    protected function init() {
+    protected function init()
+    {
         $this->context = context_system::instance();
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'local_broadcaster_pagetype';
     }
 
-    public static function get_name(): string {
+    public static function get_name(): string
+    {
         return local_broadcaster_get_string('eventbroadcasterpagetypecreated', 'local_broadcaster');
     }
 
-    public function get_description(): string {
+    public function get_description(): string
+    {
         return "The user with id '$this->userid' created the Broadcaster Page Type with id '$this->objectid'.";
     }
 

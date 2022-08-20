@@ -85,7 +85,7 @@ $string['eventbroadcasterpagecreated'] = 'New Broadcasting Page is created';
 $string['eventbroadcasterpageupdated'] = 'Broadcasting Page is updated';
 $string['eventbroadcasterpagedeleted'] = 'Broadcasting Page is deleted';
 $string['invalidsession'] =
-        '<section class="alert alert-warning" role="alert">Invalid Session has been detected. The page is reloaded</section>';
+    '<section class="alert alert-warning" role="alert">Invalid Session has been detected. The page is reloaded</section>';
 $string['settingdaystokeepexpired'] = 'Number of days to keep expired Pages';
 $string['settingdaystokeepexpireddesc'] = 'Pages will be deleted after this number of days passed their end visibility date';
 $string['delete_pages'] = 'Delete abandoned expired Broadcaster Pages';

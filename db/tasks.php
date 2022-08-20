@@ -40,13 +40,13 @@ namespace local_broadcaster\task;
 defined('MOODLE_INTERNAL') || die;
 
 $tasks = [
-        [
-                'classname' => 'local_broadcaster\task\delete_pages',
-                'blocking' => 0,
-                'minute' => '0',
-                'hour' => '1',
-                'day' => '*',
-                'dayofweek' => '*',
-                'month' => '*'
-        ],
+    [
+        'classname' => 'local_broadcaster\task\delete_pages',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '1',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
 ];

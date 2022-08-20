@@ -19,14 +19,19 @@
  * @license GNU GPL v3 / 2022
  */
 defined('MOODLE_INTERNAL') || die();
-
+/** @var bool $hassiteconfig */
 if ($hassiteconfig) {
     $settings = new admin_settingpage('local_broadcaster', new lang_string('pluginname', 'local_broadcaster'));
 
-    $ADMIN->add('localplugins', $settings);
+    /** @var admin_root $ADMIN */
+    try {
+        $ADMIN->add('localplugins', $settings);
+    } catch (coding_exception $e) {
+        debugging($e->getMessage(), DEBUG_DEVELOPER);
+    }
 
     $settings->add(new admin_setting_configtext('local_broadcaster/daystokeepexpired',
-            new lang_string('settingdaystokeepexpired', 'local_broadcaster'),
-            new lang_string('settingdaystokeepexpireddesc', 'local_broadcaster'), 180, PARAM_INT));
+        new lang_string('settingdaystokeepexpired', 'local_broadcaster'),
+        new lang_string('settingdaystokeepexpireddesc', 'local_broadcaster'), 180, PARAM_INT));
 
 }

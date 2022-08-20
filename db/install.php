@@ -27,7 +27,6 @@ use local_broadcaster\event\broadcasterpage_created;
 use local_broadcaster\event\broadcasterpagetype_created;
 
 
-
 /**
  * Set basic plugin settings.
  *
@@ -35,7 +34,8 @@ use local_broadcaster\event\broadcasterpagetype_created;
  * @throws coding_exception
  * @noinspection PhpUnused
  */
-function xmldb_local_broadcaster_install() {
+function xmldb_local_broadcaster_install()
+{
     $main = 'local_broadcaster';
     set_config('enabled', 1, $main);
     global $DB;
@@ -45,38 +45,38 @@ function xmldb_local_broadcaster_install() {
     // Check that we have at least one page-type defined.
     if (empty($records)) {
         $records = [
-                [
-                        'userid' => 0,
-                        'type' => 'My Page',
-                        'urlpattern' => '/my/',
-                        "active" => 1
-                ],
-                [
-                        'userid' => 0,
-                        'type' => 'Site Home',
-                        'urlpattern' => '/?redirect=0',
-                        'active' => 1
-                ],
-                [
-                        'userid' => 0,
-                        'type' => 'Course View',
-                        'urlpattern' => '/course/view',
-                        'active' => 1
-                ],
+            [
+                'userid' => 0,
+                'type' => 'My Page',
+                'urlpattern' => '/my/',
+                "active" => 1
+            ],
+            [
+                'userid' => 0,
+                'type' => 'Site Home',
+                'urlpattern' => '/?redirect=0',
+                'active' => 1
+            ],
+            [
+                'userid' => 0,
+                'type' => 'Course View',
+                'urlpattern' => '/course/view',
+                'active' => 1
+            ],
         ];
         $modules = $DB->get_records('modules');
         foreach ($modules as $module) {
             $records[] = [
-                    'userid' => 0,
-                    'type' => ucfirst($module->name) . ' Page View',
-                    'urlpattern' => '/mod/' . str_replace(' ', '_', $module->name) . '/view',
-                    'active' => $module->visible
+                'userid' => 0,
+                'type' => ucfirst($module->name) . ' Page View',
+                'urlpattern' => '/mod/' . str_replace(' ', '_', $module->name) . '/view',
+                'active' => $module->visible
             ];
         }
         foreach ($records as $record) {
             $objid = $DB->insert_record($types, $record);
             $event = broadcasterpagetype_created::create([
-                    'objectid' => $objid,
+                'objectid' => $objid,
             ]);
             $event->trigger();
         }
@@ -86,30 +86,30 @@ function xmldb_local_broadcaster_install() {
         $counter = 1;
         foreach ($records as $record) {
             $contents[] =
-                    [
-                            'userid' => 0,
-                            'pagetypeid' => $counter++,
-                            'timebegin' => time(),
-                            'timeend' => time() + 86400,
-                            'active' => 0,
-                            'categoryid' => 0,
-                            'cohortid' => 0,
-                            'header' => 1,
-                            'timecreated' => time(),
-                            'timemodified' => 0,
-                            'loggedin' => 2,
-                            'identifier' => $record['type'],
-                            'title' => $record['type'],
-                            'content' => '<p class="alert alert-info">This is a ' . $record['type'] .
-                                    ' additional contents Sample</p>',
-                    ];
+                [
+                    'userid' => 0,
+                    'pagetypeid' => $counter++,
+                    'timebegin' => time(),
+                    'timeend' => time() + 86400,
+                    'active' => 0,
+                    'categoryid' => 0,
+                    'cohortid' => 0,
+                    'header' => 1,
+                    'timecreated' => time(),
+                    'timemodified' => 0,
+                    'loggedin' => 2,
+                    'identifier' => $record['type'],
+                    'title' => $record['type'],
+                    'content' => '<p class="alert alert-info">This is a ' . $record['type'] .
+                        ' additional contents Sample</p>',
+                ];
 
         }
 
         foreach ($contents as $record) {
             $objid = $DB->insert_record($main, $record);
             $event = broadcasterpage_created::create([
-                    'objectid' => $objid,
+                'objectid' => $objid,
             ]);
             $event->trigger();
         }

@@ -13,14 +13,16 @@
 <div id="{{function}}_{{recordid}}_div">
     <div class="broadcaster section" id="{{function}}_{{recordid}}_section">
         <button id="broadcasterbutton{{key}}" class="btn btn-primary" type="button" data-toggle="collapse"
-                data-target="#broadcastercollapse{{key}}" aria-expanded="false" aria-controls="broadcastercollapse{{key}}">
+                data-target="#broadcastercollapse{{key}}" aria-expanded="false"
+                aria-controls="broadcastercollapse{{key}}">
             {{title}} &udarr;
         </button>
         <br/>
         <div class="collapse" id="broadcastercollapse{{key}}">
             {{{pagecontent}}}
             {{#admin}}
-                <small class="admintext alert alert-warning" role="alert">{{valid}} {{from}}: {{timebegindt}} {{to}}: {{timeenddt}}</small>
+                <small class="admintext alert alert-warning" role="alert">{{valid}} {{from}}: {{timebegindt}} {{to}}
+                    : {{timeenddt}}</small>
             {{/admin}}
         </div>
     </div>

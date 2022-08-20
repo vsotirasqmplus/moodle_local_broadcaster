@@ -18,7 +18,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../../../config.php');
 require_login();
 global $CFG;
-/** @noinspection PhpIncludeInspection */
 require_once($CFG->libdir . '/formslib.php');
 
 use cache;
@@ -30,9 +29,10 @@ use local_broadcaster\event\broadcasterpage_updated;
 use moodleform;
 
 /**
- *
+ * Edit Pages class
  */
-class edit_pages extends moodleform {
+class EditPages extends moodleform
+{
 
     /**
      * @var
@@ -55,7 +55,8 @@ class edit_pages extends moodleform {
      * @throws dml_exception
      * @throws coding_exception
      */
-    public function save_data(object $data) {
+    public function save_data(object $data)
+    {
         // Save data here.
         global $DB, $USER;
         if (!$data->id) {
@@ -64,7 +65,7 @@ class edit_pages extends moodleform {
             $data->id = $recordid;
             $data->action = 'create';
             $event = broadcasterpage_created::create([
-                    'objectid' => $recordid,
+                'objectid' => $recordid,
             ]);
             $event->trigger();
         } else if ($data->action === 'edit') {
@@ -73,7 +74,7 @@ class edit_pages extends moodleform {
             $DB->update_record($this->table, $data);
             $recordid = $data->id;
             $event = broadcasterpage_updated::create([
-                    'objectid' => $recordid,
+                'objectid' => $recordid,
             ]);
             $event->trigger();
         } else if ($data->action === 'delete') {
@@ -81,28 +82,28 @@ class edit_pages extends moodleform {
             $DB->delete_records($this->table, ['id' => $data->id]);
             $recordid = $data->id;
             $event = broadcasterpage_deleted::create([
-                    'objectid' => $recordid,
+                'objectid' => $recordid,
             ]);
             $event->trigger();
 
         }
         // Update the broadcaster pages cache.
         $cachepages = cache::make($this->table, 'broadcasterpages');
-        $cachepages->set('broadcasterpages', $DB->get_records($this->table, null, '', '*'));
+        $cachepages->set('broadcasterpages', $DB->get_records($this->table));
 
         // Save local log entry.
         $content = $data->content['text'] ?? $data->content;
         $cohortid = $data->cohortid ?? 0;
         $categoryid = $data->categoryid ?? 0;
         $roleid = $data->roleid ?? 0;
-        $log = [
-                'userid' => $USER->id,
-                'broadcastid' => $data->id,
-                'timecreated' => time(),
-                'oldcontents' => "$USER->username,$data->action,$data->id,$data->active,$data->header," .
-                        "$data->timebegin,$data->timeend,$categoryid,$roleid,$cohortid,$content",
+        $mylog = [
+            'userid' => $USER->id,
+            'broadcastid' => $data->id,
+            'timecreated' => time(),
+            'oldcontents' => "$USER->username,$data->action,$data->id,$data->active,$data->header," .
+                "$data->timebegin,$data->timeend,$categoryid,$roleid,$cohortid,$content",
         ];
-        $DB->insert_record($this->log, $log);
+        $DB->insert_record($this->log, $mylog);
     }
 
     /**
@@ -111,15 +112,16 @@ class edit_pages extends moodleform {
      * @return array
      * @throws dml_exception
      */
-    public function validation($data, $files): array {
+    public function validation($data, $files): array
+    {
         global $DB;
         $errors = parent::validation($data, $files);
         if ($data) {
             $identifier = $data['identifier'];
             $pagetypeid = $data['pagetypeid'];
             $exists = $DB->get_record($this->table, ['identifier' => $identifier], '*', IGNORE_MULTIPLE);
-            if ($exists && ((int) $exists->id !== (int) $data['id'])) {
-                $err = (object) ['identifier' => $identifier, 'pagetypeid' => $pagetypeid];
+            if ($exists && ((int)$exists->id !== (int)$data['id'])) {
+                $err = (object)['identifier' => $identifier, 'pagetypeid' => $pagetypeid];
                 $errors['identifier'] = $this->get_string('pageerror', $this->table, $err);
             }
         }
@@ -130,75 +132,78 @@ class edit_pages extends moodleform {
      * @return void
      * @throws dml_exception
      */
-    protected function definition() {
+    protected function definition()
+    {
         global $USER;
 
-        $form = &$this->_form;
-        $form->addElement('header', 'pagessettingsheader',
-                $this->get_string('pluginname', $this->table) . $this->get_string('pages', $this->table));
-        $form->setExpanded('pagessettingsheader', false);
-        $form->addElement('text', 'id', $this->get_string('recordid', $this->table),
-                ['readonly' => 'readonly', 'size' => 10, 'maxlength' => 10]);
-        $form->setType('id', PARAM_INT);
-        $form->addElement('hidden', 'userid', 'userid');
-        $form->setDefault('userid', $USER->id);
-        $form->setType('userid', PARAM_INT);
+        $myform = &$this->_form;
+        $myform->addElement('header', 'pagessettingsheader',
+            $this->get_string('pluginname', $this->table) . $this->get_string('pages', $this->table));
+        $myform->setExpanded('pagessettingsheader', false);
+        $myform->addElement('text', 'id', $this->get_string('recordid', $this->table),
+            ['readonly' => 'readonly', 'size' => 10, 'maxlength' => 10]);
+        $myform->setType('id', PARAM_INT);
+        $myform->addElement('hidden', 'userid', 'userid');
+        $myform->setDefault('userid', $USER->id);
+        $myform->setType('userid', PARAM_INT);
         $pagetypes = $this->getActiveTypes();
-        $form->addElement('select', 'pagetypeid', $this->get_string('pagetypeid', $this->table), $pagetypes);
-        $form->setType('pagetypeid', PARAM_INT);
-        $form->addElement('text', 'identifier', $this->get_string('pageidentifier', $this->table),
-                array('size' => 60, 'maxlength' => 60));
-        $form->setType('identifier', PARAM_NOTAGS);
-        $form->addRule('identifier', $this->get_string('required'), 'required');
-        $form->addElement('hidden', 'timecreated', 'timecreated');
-        $form->setDefault('timecreated', time());
-        $form->setType('timecreated', PARAM_INT);
-        $form->addElement('hidden', 'timemodified', 'timemodified');
-        $form->setDefault('timemodified', time());
-        $form->setType('timemodified', PARAM_INT);
-        $form->addElement('date_time_selector', 'timebegin', $this->get_string('timebegin', $this->table), []);
-        $form->setDefault('timebegin', time());
-        $form->addElement('date_time_selector', 'timeend', $this->get_string('timeend', $this->table), []);
-        $form->setDefault('timeend', time() + 3600 * 24);
-        $form->addElement('selectyesno', 'active', $this->get_string('active', $this->table));
-        $form->setType('active', PARAM_INT);
-        $form->setDefault('active', 1);
-        $form->addElement('select', 'header', $this->get_string('position', $this->table),
-                [0 => $this->get_string('footer', $this->table), 1 => $this->get_string('header', $this->table)]);
-        $form->setDefault('header', 0);
-        $form->addElement('select', 'loggedin', $this->get_string('loggedin', $this->table) . $this->get_string('qm', $this->table),
-                [
-                        0 => $this->get_string('notloggedin', $this->table),
-                        1 => $this->get_string('guest'),
-                        2 => $this->get_string('loggedin', $this->table)
-                ]);
-        $form->setDefault('loggedin', 2);
+        $myform->addElement('select', 'pagetypeid', $this->get_string('pagetypeid', $this->table), $pagetypes);
+        $myform->setType('pagetypeid', PARAM_INT);
+        $myform->addElement('text', 'identifier', $this->get_string('pageidentifier', $this->table),
+            array('size' => 60, 'maxlength' => 60));
+        $myform->setType('identifier', PARAM_NOTAGS);
+        $myform->addRule('identifier', $this->get_string('required'), 'required');
+        $myform->addElement('hidden', 'timecreated', 'timecreated');
+        $myform->setDefault('timecreated', time());
+        $myform->setType('timecreated', PARAM_INT);
+        $myform->addElement('hidden', 'timemodified', 'timemodified');
+        $myform->setDefault('timemodified', time());
+        $myform->setType('timemodified', PARAM_INT);
+        $myform->addElement('date_time_selector', 'timebegin', $this->get_string('timebegin', $this->table), []);
+        $myform->setDefault('timebegin', time());
+        $myform->addElement('date_time_selector', 'timeend', $this->get_string('timeend', $this->table), []);
+        $myform->setDefault('timeend', time() + 3600 * 24);
+        $myform->addElement('selectyesno', 'active', $this->get_string('active', $this->table));
+        $myform->setType('active', PARAM_INT);
+        $myform->setDefault('active', 1);
+        $myform->addElement('select', 'header', $this->get_string('position', $this->table),
+            [0 => $this->get_string('footer', $this->table), 1 => $this->get_string('header', $this->table)]);
+        $myform->setDefault('header', 0);
+        $myform->addElement('select', 'loggedin', $this->get_string('loggedin', $this->table) . $this->get_string('qm', $this->table),
+            [
+                0 => $this->get_string('notloggedin', $this->table),
+                1 => $this->get_string('guest'),
+                2 => $this->get_string('loggedin', $this->table)
+            ]);
+        $myform->setDefault('loggedin', 2);
         $roles = $this->getRoles();
-        $form->addElement('select', 'roleid', $this->get_string('roleid', $this->table), $roles, ['size' => 1, 'width' => '80%']);
-        $categories = $this->getCategories();
-        $form->addElement('select', 'categoryid',
-                $this->get_string('categoryid', $this->table) . $this->get_string('qm', $this->table),
-                $categories, ['size' => 1, 'width' => '80%']);
-        $form->setType('categoryid', PARAM_INT);
+        $myform->addElement('select', 'roleid', $this->get_string('roleid', $this->table), $roles, ['size' => 1, 'width' => '80%']);
+        $records = 0;
+        $offset = 0;
+        $categories = $this->getCategories($records, $offset);
+        $myform->addElement('select', 'categoryid',
+            $this->get_string('categoryid', $this->table) . $this->get_string('qm', $this->table),
+            $categories, ['size' => 1, 'width' => '80%']);
+        $myform->setType('categoryid', PARAM_INT);
         // Do not present this option for site home and my page.
-        $form->hideIf('categoryid', 'pagetypeid', 'eq', 1);
-        $form->hideIf('categoryid', 'pagetypeid', 'eq', 2);
+        $myform->hideIf('categoryid', 'pagetypeid', 'eq', 1);
+        $myform->hideIf('categoryid', 'pagetypeid', 'eq', 2);
         $cohorts = $this->getCohorts();
-        $form->addElement('select', 'cohortid', $this->get_string('cohortid', $this->table) . $this->get_string('qm', $this->table),
-                $cohorts);
-        $form->setType('cohortid', PARAM_INT);
+        $myform->addElement('select', 'cohortid', $this->get_string('cohortid', $this->table) . $this->get_string('qm', $this->table),
+            $cohorts);
+        $myform->setType('cohortid', PARAM_INT);
         // Do not present this option for site home and my page.
-        $form->hideIf('cohortid', 'pagetypeid', 'eq', 1);
-        $form->hideIf('cohortid', 'pagetypeid', 'eq', 2);
-        $form->addElement('text', 'title', $this->get_string('title', $this->table), array('size' => 60, 'maxlength' => 60));
-        $form->setType('title', PARAM_NOTAGS);
-        $form->addRule('title', $this->get_string('required'), 'required');
-        $form->addElement('editor', 'content', $this->get_string('content', $this->table), null, []);
-        $form->addRule('content', $this->get_string('required'), 'required');
-        $form->setType('content', PARAM_RAW);
+        $myform->hideIf('cohortid', 'pagetypeid', 'eq', 1);
+        $myform->hideIf('cohortid', 'pagetypeid', 'eq', 2);
+        $myform->addElement('text', 'title', $this->get_string('title', $this->table), array('size' => 60, 'maxlength' => 60));
+        $myform->setType('title', PARAM_NOTAGS);
+        $myform->addRule('title', $this->get_string('required'), 'required');
+        $myform->addElement('editor', 'content', $this->get_string('content', $this->table), null, []);
+        $myform->addRule('content', $this->get_string('required'), 'required');
+        $myform->setType('content', PARAM_RAW);
         $this->add_action_buttons();
         // Keep a reference to the form, so the enclosing context could add/edit some elements.
-        $this->form = $form;
+        $this->form = $myform;
     }
 
     /**
@@ -207,7 +212,8 @@ class edit_pages extends moodleform {
      * @param $params
      * @return string
      */
-    private function get_string($identifier, $plugin = null, $params = null): string {
+    private function get_string($identifier, $plugin = null, $params = null): string
+    {
         try {
             $identifier = get_string($identifier, $plugin, $params);
         } catch (coding_exception $e) {
@@ -220,17 +226,17 @@ class edit_pages extends moodleform {
      * @return array
      * @throws dml_exception
      */
-    private function getactivetypes(): array {
+    private function getactivetypes(): array
+    {
         global $DB;
         return $DB->get_records_menu($this->typestable, ['active' => 1], 'type, id', 'id, type');
     }
 
-    /** @noinspection PhpSameParameterValueInspection */
-
     /**
      * @return string[]
      */
-    private function getRoles(): array {
+    private function getRoles(): array
+    {
         $roles = [0 => 'All'];
         global $DB;
         try {
@@ -248,7 +254,8 @@ class edit_pages extends moodleform {
         return $roles;
     }
 
-    private function getcategories(int $records = 0, int $offset = 0): array {
+    private function getcategories(int $records = 0, int $offset = 0): array
+    {
         $cats = local_broadcaster_get_user_categories();
         $admin = (is_siteadmin() ? [0 => $this->get_string('none', $this->table)] : []);
         $entries = $admin + $cats;
@@ -262,7 +269,8 @@ class edit_pages extends moodleform {
      * @return array
      * @throws dml_exception
      */
-    private function getcohorts(): array {
+    private function getcohorts(): array
+    {
         return local_broadcaster_get_user_cohorts();
     }
 

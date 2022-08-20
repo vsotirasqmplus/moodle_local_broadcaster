@@ -29,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
 require_login();
 
 /** @noinspection PhpUnused */
-function xmldb_local_broadcaster_uninstall(): bool {
+function xmldb_local_broadcaster_uninstall(): bool
+{
     global $DB;
 
     $dbman = $DB->get_manager();

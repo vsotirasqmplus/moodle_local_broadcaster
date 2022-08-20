@@ -13,12 +13,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-use local_broadcaster\edit_types;
+use local_broadcaster\EditTypes;
 
 require_once(__DIR__ . '/../../config.php');
 global $OUTPUT, $PAGE, $DB;
 require_once('./locallib.php');
-require_once('./classes/edit_types.php');
+require_once('./classes/EditTypes.php');
 $broadcaster = 'local_broadcaster';
 try {
     $PAGE->set_context(context_system::instance());
@@ -36,7 +36,7 @@ try {
     $action = optional_param('action', 'create', PARAM_TEXT);
     // Check if this the valid session key.
     $sesskey = optional_param('sesskey', '', PARAM_TEXT);
-    $form = new edit_types();
+    $form = new EditTypes();
     $toform = null;
 
     $dbtable = $broadcaster . '_pagetype';
@@ -63,6 +63,9 @@ try {
                 case 'create':
                     $message = strtoupper("<strong>$action</strong>");
                     $form->form->addElement('header', 'actionheader', $message);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -74,31 +77,31 @@ try {
         $url = './edit_types.php';
         $table = new html_table();
         $table->head = [
-                local_broadcaster_get_string('id', $broadcaster),
-                local_broadcaster_get_string('type', $broadcaster),
-                local_broadcaster_get_string('url', $broadcaster) . local_broadcaster_get_string('pagetypeid', $broadcaster),
-                local_broadcaster_get_string('user', $broadcaster),
-                local_broadcaster_get_string('active', $broadcaster),
-                local_broadcaster_get_string('edit', $broadcaster),
-                local_broadcaster_get_string('delete', $broadcaster),
+            local_broadcaster_get_string('id', $broadcaster),
+            local_broadcaster_get_string('type', $broadcaster),
+            local_broadcaster_get_string('url', $broadcaster) . local_broadcaster_get_string('pagetypeid', $broadcaster),
+            local_broadcaster_get_string('user', $broadcaster),
+            local_broadcaster_get_string('active', $broadcaster),
+            local_broadcaster_get_string('edit', $broadcaster),
+            local_broadcaster_get_string('delete', $broadcaster),
         ];
         foreach ($types as $key => $type) {
             $table->data[] =
+                [
+                    $key,
+                    $type->type,
+                    $type->urlpattern,
+                    $DB->get_field('user', 'username', ['id' => $type->userid]),
                     [
-                            $key,
-                            $type->type,
-                            $type->urlpattern,
-                            $DB->get_field('user', 'username', ['id' => $type->userid]),
-                            [
-                                    local_broadcaster_get_string('no', $broadcaster),
-                                    local_broadcaster_get_string('yes', $broadcaster)
-                            ][$type->active],
-                            local_broadcaster_post_link(new moodle_url($url), 'id', '&#9998;', $key, 'edit'),
-                            local_broadcaster_post_link(new moodle_url($url), 'id', '&#10007;', $key, 'delete')
-                    ];
+                        local_broadcaster_get_string('no', $broadcaster),
+                        local_broadcaster_get_string('yes', $broadcaster)
+                    ][$type->active],
+                    local_broadcaster_post_link(new moodle_url($url), 'id', '&#9998;', $key, 'edit'),
+                    local_broadcaster_post_link(new moodle_url($url), 'id', '&#10007;', $key, 'delete')
+                ];
         }
         $output .= '<div class="broadcaster pagetyperecords border border-primary">' . html_writer::table($table) .
-                '</div><p/>';
+            '</div><p/>';
     }
 
     $prompt = local_broadcaster_get_prompt($id, $broadcaster, $action);
@@ -148,6 +151,6 @@ SCRIPT;
     echo $output;
 
     echo $OUTPUT->footer();
-} catch (dml_exception | coding_exception | moodle_exception | require_login_exception $e) {
+} catch (dml_exception|coding_exception|moodle_exception|require_login_exception $e) {
     debugging($e->getMessage() . '<br/>' . $e->getTraceAsString(), DEBUG_DEVELOPER);
 }

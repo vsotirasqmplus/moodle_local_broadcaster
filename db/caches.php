@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $definitions = [
-        'broadcastertypes' => [
-                'mode' => cache_store::MODE_APPLICATION
-        ],
-        'broadcasterpages' => [
-                'mode' => cache_store::MODE_APPLICATION
-        ],
+    'broadcastertypes' => [
+        'mode' => cache_store::MODE_APPLICATION
+    ],
+    'broadcasterpages' => [
+        'mode' => cache_store::MODE_APPLICATION
+    ],
 ];

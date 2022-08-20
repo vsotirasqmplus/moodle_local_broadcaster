@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 require_once(__DIR__ . '/../../config.php');
 require_once('./locallib.php');
-require_once('./classes/edit_pages.php');
+require_once('./classes/EditPages.php');
 global $OUTPUT, $PAGE, $DB, $USER;
 $broadcaster = 'local_broadcaster';
 
-use local_broadcaster\edit_pages;
+use local_broadcaster\EditPages;
 
 try {
     $PAGE->set_context(context_system::instance());
@@ -46,8 +46,8 @@ try {
         $offset = $page * $pagesize;
         // Check if this the valid session key.
         $sesskey = optional_param('sesskey', '', PARAM_TEXT);
-        $form = new edit_pages();
-        $toform = null;
+        $form = new EditPages();
+        $toform = [];
         // Check if an action is set, check if a record with id exists, then populate the form.
 
         $typestable = $broadcaster . '_pagetype';
@@ -98,7 +98,7 @@ try {
                 $wheresql .= 'cohortid IN (' . implode(', ', array_keys($cohorts)) . ')';
             }
 
-            $sql = "SELECT * FROM {{$dbtable}} ";
+            $sql = "SELECT * FROM {" . $dbtable . "} ";
             if ($wheresql) {
                 $sql .= " WHERE $wheresql";
             }
@@ -108,7 +108,7 @@ try {
             $pages = $DB->get_records($dbtable, $conditions, 'id', '*', $offset, $pagesize);
             $counter = $DB->count_records($dbtable, $conditions);
         }
-        $maxpages = (int) (($counter - 1) / $pagesize);
+        $maxpages = (int)(($counter - 1) / $pagesize);
 
         if ($pages) {
             $url = './edit_pages.php';
@@ -124,8 +124,8 @@ try {
                 $selecttypes .= "<option value='$key' $selected>$pagetype</option>";
             }
             $label =
-                    local_broadcaster_get_string('page', $broadcaster) . '&ensp;' .
-                    local_broadcaster_get_string('types', $broadcaster);
+                local_broadcaster_get_string('page', $broadcaster) . '&ensp;' .
+                local_broadcaster_get_string('types', $broadcaster);
             $typesselector = <<<TYPES
 <div class="broadcaster formdiv border border-primary">
     <form action="$url">
@@ -142,35 +142,35 @@ TYPES;
 
             $table = new html_table();
             $table->head = [
-                    local_broadcaster_get_string('id', $broadcaster),
-                    local_broadcaster_get_string('pageidentifier', $broadcaster),
-                    local_broadcaster_get_string('title', $broadcaster),
-                    local_broadcaster_get_string('user', $broadcaster),
-                    local_broadcaster_get_string('active', $broadcaster),
-                    local_broadcaster_get_string('header', $broadcaster),
-                    local_broadcaster_get_string('from', $broadcaster),
-                    local_broadcaster_get_string('to', $broadcaster),
-                    local_broadcaster_get_string('edit', $broadcaster),
-                    local_broadcaster_get_string('delete', $broadcaster),
+                local_broadcaster_get_string('id', $broadcaster),
+                local_broadcaster_get_string('pageidentifier', $broadcaster),
+                local_broadcaster_get_string('title', $broadcaster),
+                local_broadcaster_get_string('user', $broadcaster),
+                local_broadcaster_get_string('active', $broadcaster),
+                local_broadcaster_get_string('header', $broadcaster),
+                local_broadcaster_get_string('from', $broadcaster),
+                local_broadcaster_get_string('to', $broadcaster),
+                local_broadcaster_get_string('edit', $broadcaster),
+                local_broadcaster_get_string('delete', $broadcaster),
             ];
             foreach ($pages as $key => $broadcastpage) {
                 $table->data[] =
-                        [
-                                $key,
-                                $broadcastpage->identifier,
-                                $broadcastpage->title,
-                                $DB->get_field('user', 'username', ['id' => $broadcastpage->userid]),
-                                [local_broadcaster_get_string('no', $broadcaster),
-                                        local_broadcaster_get_string('yes', $broadcaster)][$broadcastpage->active],
-                                [local_broadcaster_get_string('footer', $broadcaster),
-                                        local_broadcaster_get_string('header', $broadcaster)][$broadcastpage->header],
-                                date('d M Y H:i:s', $broadcastpage->timebegin),
-                                date('d M Y H:i:s', $broadcastpage->timeend),
-                                local_broadcaster_post_link(new moodle_url($url), 'id', '&#9998;', $key, 'edit', $page,
-                                        $pagetypeid),
-                                local_broadcaster_post_link(new moodle_url($url), 'id', '&#10007;', $key, 'delete', $page,
-                                        $pagetypeid)
-                        ];
+                    [
+                        $key,
+                        $broadcastpage->identifier,
+                        $broadcastpage->title,
+                        $DB->get_field('user', 'username', ['id' => $broadcastpage->userid]),
+                        [local_broadcaster_get_string('no', $broadcaster),
+                            local_broadcaster_get_string('yes', $broadcaster)][$broadcastpage->active],
+                        [local_broadcaster_get_string('footer', $broadcaster),
+                            local_broadcaster_get_string('header', $broadcaster)][$broadcastpage->header],
+                        date('d M Y H:i:s', $broadcastpage->timebegin),
+                        date('d M Y H:i:s', $broadcastpage->timeend),
+                        local_broadcaster_post_link(new moodle_url($url), 'id', '&#9998;', $key, 'edit', $page,
+                            $pagetypeid),
+                        local_broadcaster_post_link(new moodle_url($url), 'id', '&#10007;', $key, 'delete', $page,
+                            $pagetypeid)
+                    ];
             }
             $output .= $typesselector;
             $output .= local_broadcaster_edit_pages_nav($page, $maxpages, $PAGE->url->get_path(), $pagetypeid);
@@ -236,6 +236,6 @@ SCRIPT;
     echo $output;
 
     echo $OUTPUT->footer();
-} catch (dml_exception | coding_exception | require_login_exception | moodle_exception $e) {
+} catch (dml_exception|coding_exception|require_login_exception|moodle_exception $e) {
     debugging($e->getMessage() . '<br/>' . $e->getTraceAsString(), DEBUG_DEVELOPER);
 }

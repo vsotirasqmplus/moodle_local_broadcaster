@@ -22,14 +22,16 @@ use dml_exception;
 use lang_string;
 use local_broadcaster\event\broadcasterpage_deleted;
 
-class delete_pages extends scheduled_task {
+class delete_pages extends scheduled_task
+{
 
-    public function get_name(): string {
-        // TODO: Implement get_name() method.
+    public function get_name(): string
+    {
         return (new lang_string('delete_pages', 'local_broadcaster'))->__toString();
     }
 
-    public function execute() {
+    public function execute()
+    {
         global $DB;
         try {
             $keepdays = get_config('local_broadcaster', 'daystokeepexpired');
@@ -52,10 +54,10 @@ class delete_pages extends scheduled_task {
                     $DB->delete_records('local_broadcaster', ['id' => $id]);
                     // Register the action.
                     $event = broadcasterpage_deleted::create([
-                            'objectid' => $record->id,
+                        'objectid' => $record->id,
                     ]);
                     $event->trigger();
-                } catch (coding_exception | dml_exception $e) {
+                } catch (coding_exception|dml_exception $e) {
                     debugging($e->getMessage() . '\n<br/>' . $e->getTraceAsString(), DEBUG_DEVELOPER);
                 }
             }

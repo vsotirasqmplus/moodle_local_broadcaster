@@ -18,7 +18,6 @@ namespace local_broadcaster;
 require_once(__DIR__ . '/../../../config.php');
 require_login();
 global $CFG;
-/** @noinspection PhpIncludeInspection */
 require_once($CFG->libdir . '/formslib.php');
 
 use cache;
@@ -29,7 +28,8 @@ use local_broadcaster\event\broadcasterpagetype_deleted;
 use local_broadcaster\event\broadcasterpagetype_updated;
 use moodleform;
 
-class edit_types extends moodleform {
+class EditTypes extends moodleform
+{
 
     public $form;
     protected $table = 'local_broadcaster_pagetype';
@@ -40,7 +40,8 @@ class edit_types extends moodleform {
      * @throws dml_exception
      * @throws coding_exception
      */
-    public function save_data(object $data) {
+    public function save_data(object $data)
+    {
         // Save data here.
         global $DB, $USER;
         if (!$data->id) {
@@ -48,21 +49,21 @@ class edit_types extends moodleform {
             $data->id = $recordid;
             $data->action = 'create';
             $event = broadcasterpagetype_created::create([
-                    'objectid' => $recordid,
+                'objectid' => $recordid,
             ]);
             $event->trigger();
         } else if ($data->action === 'edit') {
             $DB->update_record($this->table, $data);
             $recordid = $data->id;
             $event = broadcasterpagetype_updated::create([
-                    'objectid' => $recordid,
+                'objectid' => $recordid,
             ]);
             $event->trigger();
         } else if ($data->action === 'delete') {
             $DB->delete_records($this->table, ['id' => $data->id]);
             $recordid = $data->id;
             $event = broadcasterpagetype_deleted::create([
-                    'objectid' => $recordid,
+                'objectid' => $recordid,
             ]);
             $event->trigger();
         }
@@ -71,56 +72,58 @@ class edit_types extends moodleform {
         $cachetypes->set('broadcastertypes', $DB->get_records($this->table, ['active' => 1], 'id', 'id, urlpattern'));
 
         // Save local log entry.
-        $log = [
-                'userid' => $USER->id,
-                'pagetypeid' => $data->id,
-                'timecreated' => time(),
-                'oldurlpattern' => "$USER->username,$data->action,$data->id,$data->urlpattern,$data->type",
+        $logger = [
+            'userid' => $USER->id,
+            'pagetypeid' => $data->id,
+            'timecreated' => time(),
+            'oldurlpattern' => "$USER->username,$data->action,$data->id,$data->urlpattern,$data->type",
         ];
-        $DB->insert_record($this->log, $log);
+        $DB->insert_record($this->log, $logger);
     }
 
     /**
      * @return void
      * @throws dml_exception
      */
-    protected function definition() {
+    protected function definition()
+    {
         global $USER;
-        $form = &$this->_form;
-        $form->addElement('header', 'typessettingsheader', $this->get_string('edittypestitle', $this->main));
-        $form->addElement('text', 'id', $this->get_string('recordid', $this->main),
-                ['readonly' => 'readonly', 'size' => 10, 'maxlength' => 10]);
-        $form->setType('id', PARAM_INT);
-        $form->addElement('hidden', 'userid', 'userid');
-        $form->setDefault('userid', $USER->id);
-        $form->setType('userid', PARAM_INT);
-        $form->addElement('text', 'type', $this->get_string('typename', $this->main), '', ['size' => 20, 'maxlength' => 60]);
-        $form->addRule('type', $this->get_string('required'), 'required');
-        $form->setType('type', PARAM_NOTAGS);
+        $myform = &$this->_form;
+        $myform->addElement('header', 'typessettingsheader', $this->get_string('edittypestitle', $this->main));
+        $myform->addElement('text', 'id', $this->get_string('recordid', $this->main),
+            ['readonly' => 'readonly', 'size' => 10, 'maxlength' => 10]);
+        $myform->setType('id', PARAM_INT);
+        $myform->addElement('hidden', 'userid', 'userid');
+        $myform->setDefault('userid', $USER->id);
+        $myform->setType('userid', PARAM_INT);
+        $myform->addElement('text', 'type', $this->get_string('typename', $this->main), '', ['size' => 20, 'maxlength' => 60]);
+        $myform->addRule('type', $this->get_string('required'), 'required');
+        $myform->setType('type', PARAM_NOTAGS);
         $urls = $this->getTypes();
-        $form->addElement('select', 'urlpattern', $this->get_string('pagetypeid', $this->main), $urls);
-        $form->setType('urlpattern', PARAM_TEXT);
-        $form->addElement('selectyesno', 'active', $this->get_string('active', $this->main));
-        $form->setType('active', PARAM_INT);
-        $form->setDefault('active', 1);
+        $myform->addElement('select', 'urlpattern', $this->get_string('pagetypeid', $this->main), $urls);
+        $myform->setType('urlpattern', PARAM_TEXT);
+        $myform->addElement('selectyesno', 'active', $this->get_string('active', $this->main));
+        $myform->setType('active', PARAM_INT);
+        $myform->setDefault('active', 1);
         $this->add_action_buttons();
-        $this->form = $form;
+        $this->form = $myform;
     }
 
     /**
      * @throws dml_exception
      */
-    private function gettypes(): array {
+    private function gettypes(): array
+    {
         global $DB;
         $mods = $DB->get_records('modules');
         $pagepatterns = [
-                '/?redirect=0' => $this->get_string('sitehome', $this->main),
-                '/my/' => $this->get_string('mypage', $this->main),
-                '/course/view' => $this->get_string('course') . ' ' . $this->get_string('view', $this->main)
+            '/?redirect=0' => $this->get_string('sitehome', $this->main),
+            '/my/' => $this->get_string('mypage', $this->main),
+            '/course/view' => $this->get_string('course') . ' ' . $this->get_string('view', $this->main)
         ];
         foreach ($mods as $mod) {
             $pagepatterns['/mod/' . $mod->name . '/view'] =
-                    $mod->name . ' ' . $this->get_string('module', $this->main) . ' ' . $this->get_string('view', $this->main);
+                $mod->name . ' ' . $this->get_string('module', $this->main) . ' ' . $this->get_string('view', $this->main);
         }
         return $pagepatterns;
     }
@@ -131,23 +134,25 @@ class edit_types extends moodleform {
      * @return array
      * @throws dml_exception
      */
-    public function validation($data, $files): array {
+    public function validation($data, $files): array
+    {
         global $DB;
         $errors = parent::validation($data, $files);
         if ($data) {
             $type = $data['type'];
             $pattern = $data['urlpattern'];
             $exists = $DB->get_record($this->table, ['type' => $type, 'urlpattern' => $pattern], '*',
-                    IGNORE_MULTIPLE);
-            if ($exists && ((int) $exists->id !== (int) $data['id'])) {
-                $err = (object) ['type' => $type, 'pattern' => $pattern];
+                IGNORE_MULTIPLE);
+            if ($exists && ((int)$exists->id !== (int)$data['id'])) {
+                $err = (object)['type' => $type, 'pattern' => $pattern];
                 $errors['type'] = $this->get_string('typeerror', $this->main, $err);
             }
         }
         return $errors;
     }
 
-    private function get_string($identifier, $plugin = null, $params = null): string {
+    private function get_string($identifier, $plugin = null, $params = null): string
+    {
         try {
             $identifier = get_string($identifier, $plugin, $params);
         } catch (coding_exception $e) {

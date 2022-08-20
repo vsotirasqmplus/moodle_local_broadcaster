@@ -16,7 +16,6 @@
 
 require_once(__DIR__ . '/../../config.php');
 global $OUTPUT, $PAGE, $USER, $CFG;
-/** @noinspection PhpIncludeInspection */
 require_once($CFG->libdir . '/accesslib.php');
 require_once('./locallib.php');
 try {
@@ -39,17 +38,17 @@ try {
         $categorypermission = $sitepermission;
     }
     $nopermission = !($sitepermission || $categorypermission);
-    $content = (object) [
-            'sitepermission' => $sitepermission,
-            'categorypermission' => $categorypermission,
-            'nopermission' => $nopermission,
-            'wwwroot' => $CFG->wwwroot . '/' . $CFG->admin,
+    $content = (object)[
+        'sitepermission' => $sitepermission,
+        'categorypermission' => $categorypermission,
+        'nopermission' => $nopermission,
+        'wwwroot' => $CFG->wwwroot . '/' . $CFG->admin,
     ];
 
     echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('local_broadcaster/settings', $content);
 
     echo $OUTPUT->footer();
-} catch (coding_exception | require_login_exception | moodle_exception $e) {
+} catch (coding_exception|require_login_exception|moodle_exception $e) {
     debugging($e->getMessage() . ' ' . $e->getTraceAsString());
 }
