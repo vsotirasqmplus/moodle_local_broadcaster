@@ -27,12 +27,13 @@
 
     }
 }}
-<script class="broadcaster" id="{{function}}_{{recordid}}_script_id">
+<script defer class="broadcaster" id="{{function}}_{{recordid}}_script_id">
     f_{{function}}_{{recordid}}_wait_For_Element_To_Display("#region-main",
         function() {
             const div = document.getElementById('{{function}}_{{recordid}}_section');
             const target = document.getElementById('region-main');
             div.parentElement.removeChild(div);
+            // Append or Prepend element.
             target.{{target}}(div);
             div.style.visibility = 'visible';
         },
@@ -49,7 +50,7 @@
     function f_{{function}}_{{recordid}}_wait_For_Element_To_Display(selector, callback, checkFrequencyInMs, timeoutInMs) {
         const startTimeInMs = Date.now();
         (function loopSearch() {
-            if (document.querySelector(selector) != null) {
+            if (document.querySelector(selector) != null && typeof $().collapse == 'function') {
                 callback();
                 f_{{function}}_{{recordid}}_script();
             } else {
