@@ -189,6 +189,9 @@ class Broadcaster
         // Cater for upgrading state empty cache.
         self::update_cache();
         $typerecords = self::$types;
+	if (!is_iterable($typerecords)){
+            $typerecords = [];
+	}
         // Get type IDs.
         // Cater for the query when there is no match.
         $typeids[0] = '0';
