@@ -50,7 +50,11 @@
     function f_{{function}}_{{recordid}}_wait_For_Element_To_Display(selector, callback, checkFrequencyInMs, timeoutInMs) {
         const startTimeInMs = Date.now();
         (function loopSearch() {
-            if (document.querySelector(selector) != null && typeof $().collapse == 'function') {
+            let bscollapse = 'na';
+            if (window.jQuery) {
+                bscollapse = typeof $().collapse;
+            }
+            if (document.querySelector(selector) != null && bscollapse === 'function') {
                 callback();
                 f_{{function}}_{{recordid}}_script();
             } else {
