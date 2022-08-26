@@ -195,6 +195,10 @@ class EditPages extends moodleform
         // Do not present this option for site home and my page.
         $myform->hideIf('cohortid', 'pagetypeid', 'eq', 1);
         $myform->hideIf('cohortid', 'pagetypeid', 'eq', 2);
+        $buttontypes = $this->getbuttontypes();
+        $myform->addElement('select', 'buttontype', $this->get_string('buttontype', $this->table), $buttontypes);
+        $buttonsizes = $this->getbuttonsizes();
+        $myform->addElement('select', 'buttonsize', $this->get_string('buttonsize', $this->table), $buttonsizes);
         $myform->addElement('text', 'title', $this->get_string('title', $this->table), array('size' => 60, 'maxlength' => 60));
         $myform->setType('title', PARAM_NOTAGS);
         $myform->addRule('title', $this->get_string('required'), 'required');
@@ -204,6 +208,28 @@ class EditPages extends moodleform
         $this->add_action_buttons();
         // Keep a reference to the form, so the enclosing context could add/edit some elements.
         $this->form = $myform;
+    }
+
+    /**
+     * @return array
+     */
+    private function getbuttontypes(): array
+    {
+        $elements = [];
+        $prefix = 'btn';
+        $sep = '-';
+        $types = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+        $forms = ['', 'outline'];
+        foreach ($forms as $form) {
+            foreach ($types as $type) {
+                if ($form <> '') {
+                    $elements[$prefix . $sep . $form . $sep . $type] = "$form $type";
+                } else {
+                    $elements[$prefix . $sep . $type] = $type;
+                }
+            }
+        }
+        return $elements;
     }
 
     /**
@@ -274,4 +300,12 @@ class EditPages extends moodleform
         return local_broadcaster_get_user_cohorts();
     }
 
+    private function getbuttonsizes(): array
+    {
+        return [
+            'btn' => $this->get_string('buttonsizenormal', $this->table),
+            'btn-sm' => $this->get_string('buttonsizesmall', $this->table),
+            'btn-lg' => $this->get_string('buttonsizelarge', $this->table),
+        ];
+    }
 }

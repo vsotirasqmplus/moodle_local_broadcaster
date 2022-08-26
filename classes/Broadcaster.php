@@ -20,7 +20,6 @@ use coding_exception;
 use context_system;
 use dml_exception;
 use moodle_exception;
-use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 $dir = __DIR__;
@@ -128,34 +127,28 @@ class Broadcaster
             $to = local_broadcaster_get_string('to', self::$maintable);
             $valid = local_broadcaster_get_string('valid', self::$maintable);
             foreach ($pages as $recid => $page) {
-                $result[] =
-                    (object)['key' => sha1($recid . $page->identifier),
-                        'title' => $page->title,
-                        'pagecontent' => $page->content,
-                        'target' => ['append', 'prepend'][$page->header],
-                        'function' => $function,
-                        'file' => $file,
-                        'dir' => $dir,
-                        'moodlefile' => $moodlefile,
-                        'moodledir' => $moodledir,
-                        'useridnumber' => $USER->idnumber ?? 0,
-                        'userid' => $USER->id ?? 0,
-                        'courseidnumber' => $COURSE->idnumber ?? 0,
-                        'courseid' => $COURSE->id ?? 0,
-                        'sitename' => $SITE->fullname ?? '',
-                        'url' => $PAGE->url,
-                        'recordid' => $page->id,
-                        'roleid' => $page->roleid,
-                        'timebegin' => $page->timebegin,
-                        'timeend' => $page->timeend,
-                        'timebegindt' => gmdate("d M Y H:i:s", $page->timebegin),
-                        'timeenddt' => gmdate("d M Y H:i:s", $page->timeend),
-                        'from' => $from,
-                        'to' => $to,
-                        'valid' => $valid,
-                        'admin' => has_capability('moodle/site:config', context_system::instance()),
-                        'loggedin' => $page->loggedin,
-                    ];
+                $page->pagecontent = $page->content;
+                $page->key = sha1($recid . $page->identifier);
+                $page->target = ['append', 'prepend'][$page->header];
+                $page->function = $function;
+                $page->file = $file;
+                $page->dir = $dir;
+                $page->moodlefile = $moodlefile;
+                $page->moodledir = $moodledir;
+                $page->useridnumber = $USER->idnumber ?? 0;
+                $page->userid = $USER->id ?? 0;
+                $page->courseidnumber = $COURSE->idnumber ?? 0;
+                $page->courseid = $COURSE->id ?? 0;
+                $page->sitename = $SITE->fullname ?? '';
+                $page->url = $PAGE->url;
+                $page->recordid = $page->id;
+                $page->timebegindt = gmdate("d M Y H:i:s", $page->timebegin);
+                $page->timeenddt = gmdate("d M Y H:i:s", $page->timeend);
+                $page->from = $from;
+                $page->to = $to;
+                $page->valid = $valid;
+                $page->admin = has_capability('moodle/site:config', context_system::instance());
+                $result[] = $page;
             }
         }
         return $result;
@@ -189,9 +182,9 @@ class Broadcaster
         // Cater for upgrading state empty cache.
         self::update_cache();
         $typerecords = self::$types;
-	if (!is_iterable($typerecords)){
+        if (!is_iterable($typerecords)) {
             $typerecords = [];
-	}
+        }
         // Get type IDs.
         // Cater for the query when there is no match.
         $typeids[0] = '0';

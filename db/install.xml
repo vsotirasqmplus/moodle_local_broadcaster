@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB PATH="local/broadcaster/db" VERSION="20220325" COMMENT="XMLDB file for Moodle local/broadcaster on Content Broadcaster"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
->
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
     <TABLE NAME="local_broadcaster" COMMENT="Table to keep track of Broadcasting contents">
       <FIELDS>
@@ -20,6 +19,8 @@
         <FIELD NAME="loggedin" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Is the page for logged in users?"/>
         <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="What account role this is for"/>
         <FIELD NAME="identifier" TYPE="char" LENGTH="60" NOTNULL="false" SEQUENCE="false" COMMENT="Content record Identifier"/>
+        <FIELD NAME="buttontype" TYPE="char" LENGTH="30" NOTNULL="true" DEFAULT="btn-primary" SEQUENCE="false" COMMENT="Bootstrap button type"/>
+        <FIELD NAME="buttonsize" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="btn" SEQUENCE="false" COMMENT="Bootstrap button size"/>
         <FIELD NAME="title" TYPE="char" LENGTH="60" NOTNULL="true" DEFAULT="Please set the Page Title" SEQUENCE="false" COMMENT="Page title to show"/>
         <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Content of the broadcasting"/>
       </FIELDS>
